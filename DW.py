@@ -42,17 +42,14 @@ def onSplit(pandaDF):
     #pandaDF.drop("etaban202111_id", axis=1, inplace=True)
 
     pandaDFD = pandaDF.copy()
-
     
-
     le = preprocessing.LabelEncoder()
 
     pandaDF_2 = pandaDF.apply(le.fit_transform)
-    print(pandaDF_2.head())
-    pandaDF_2.info()
+
       
     pandaDF_2["mtedle2019_elec_conso_tot"] = pd.cut(pandaDF_2["mtedle2019_elec_conso_tot"], 32, labels=np.arange(32))
-    print(pandaDF_2.head())
+
     enc = preprocessing.OneHotEncoder()
     enc.fit(pandaDF_2)
 
@@ -64,8 +61,6 @@ def onSplit(pandaDF):
 
         pandaDFD[categorie] = pd.concat([pandaDF[categorie], oheDF], axis=1).drop(categorie, axis=1)
 
-    pandaDFD.info()
-    #print(pandaDFD.head())
 
     split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
 
