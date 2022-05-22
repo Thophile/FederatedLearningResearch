@@ -10,10 +10,10 @@ def EvaluatePrediction(y_test, y_pred, y_pred_proba):
     print(matrix)
     print(classification_report(y_test, y_pred))
 
-    logit_roc_auc = roc_auc_score(y_test, y_pred)
+    #logit_roc_auc = roc_auc_score(y_test, y_pred)
     fpr, tpr, thresholds = roc_curve(y_test, y_pred_proba)
     plt.figure()
-    plt.plot(fpr, tpr, label='ROC (area = %0.2f)' % logit_roc_auc)
+    #plt.plot(fpr, tpr, label='ROC (area = %0.2f)' % logit_roc_auc)
     plt.plot([0, 1], [0, 1],'r--')
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.0])
