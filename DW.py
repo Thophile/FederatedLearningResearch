@@ -17,39 +17,29 @@ def loadData(filePath, cols):
 
 
 def LoadAll():
-    batDf = loadData(".\data\\batiments\\batiment_62.csv", ["mtedle2019_elec_conso_tot", "bnb_id", "adedpe202006_logtype_min_classe_ener_ges", "adedpe202006_logtype_ratio_ges_conso", "adedpe202006_logtype_periode_construction", "adedpe202006_min_conso_ener", "adedpe202006_min_estim_ges", "adedpe202006_max_conso_ener", "adedpe202006_max_estim_ges", "anarnc202012_nb_log", "anarnc202012_nb_lot_tertiaire", "anarnc202012_nb_lot_tot", "mtedle2019_elec_conso_res_par_pdl_res", "mtedle2019_elec_nb_pdl_tot", "mtedle2019_gaz_conso_res_par_pdl_res", "mtedle2019_gaz_nb_pdl_tot", "adedpe202006_logtype_baie_fs", "adedpe202006_logtype_baie_mat", "adedpe202006_logtype_baie_orientation", "adedpe202006_logtype_baie_remplissage", "adedpe202006_logtype_baie_type_vitrage", "adedpe202006_logtype_ch_gen_lib_appoint", "adedpe202006_logtype_ch_gen_lib_princ", "adedpe202006_logtype_ch_is_solaire", "adedpe202006_logtype_ch_type_inst", "adedpe202006_logtype_ecs_gen_lib_princ", "adedpe202006_logtype_inertie", "adedpe202006_logtype_mur_ep_mat_ext", "adedpe202006_logtype_mur_mat_ext", "adedpe202006_logtype_mur_pos_isol_ext", "adedpe202006_logtype_pb_mat", "adedpe202006_logtype_pb_pos_isol", "adedpe202006_logtype_ph_pos_isol", "adedpe202006_logtype_presence_balcon", "adedpe202006_logtype_presence_climatisation", "adedpe202006_logtype_type_batiment", "adedpe202006_logtype_type_ventilation", "adedpe202006_nb_classe_ene_a", "adedpe202006_nb_classe_ene_b", "adedpe202006_nb_classe_ene_c", "adedpe202006_nb_classe_ene_d", "adedpe202006_nb_classe_ene_e", "adedpe202006_nb_classe_ene_f", "adedpe202006_nb_classe_ene_g", "adedpe202006_nb_classe_ene_nc", "cerffo2020_mat_mur_txt", "cerffo2020_mat_toit_txt", "igntop202103_bat_hauteur"])
-    batDf.info()
-    print("Bat OK")
-    relAddBatDf= loadData(".\data\\relAddBats\\rel_adresse_batiment_opendata_62.csv", ["bnb_id", "etaban202111_id"])
-    relAddBatDf.info()
-    print("Rel OK")
-    adressDf= loadData(".\data\\adresses\\adresse_62.csv", ["etaban202111_id", "etaban202111_latitude", "etaban202111_longitude"])
-    adressDf.info()
-    print("Adresse OK")
-    tempfulldf = pd.merge(batDf, relAddBatDf, how="left", on=["bnb_id"])
-    print("Temp1 OK")
-    fulldf = pd.merge(tempfulldf, adressDf, how="left", on=["etaban202111_id"])
-
-    for i in ['62','67','83','85','87','91']:
-        batDf = loadData(".\data\\batiments\\batiment_"+i+".csv", ["mtedle2019_elec_conso_tot", "bnb_id", "adedpe202006_logtype_min_classe_ener_ges", "adedpe202006_logtype_ratio_ges_conso", "adedpe202006_logtype_periode_construction", "adedpe202006_min_conso_ener", "adedpe202006_min_estim_ges", "adedpe202006_max_conso_ener", "adedpe202006_max_estim_ges", "anarnc202012_nb_log", "anarnc202012_nb_lot_tertiaire", "anarnc202012_nb_lot_tot", "mtedle2019_elec_conso_res_par_pdl_res", "mtedle2019_elec_nb_pdl_tot", "mtedle2019_gaz_conso_res_par_pdl_res", "mtedle2019_gaz_nb_pdl_tot", "adedpe202006_logtype_baie_fs", "adedpe202006_logtype_baie_mat", "adedpe202006_logtype_baie_orientation", "adedpe202006_logtype_baie_remplissage", "adedpe202006_logtype_baie_type_vitrage", "adedpe202006_logtype_ch_gen_lib_appoint", "adedpe202006_logtype_ch_gen_lib_princ", "adedpe202006_logtype_ch_is_solaire", "adedpe202006_logtype_ch_type_inst", "adedpe202006_logtype_ecs_gen_lib_princ", "adedpe202006_logtype_inertie", "adedpe202006_logtype_mur_ep_mat_ext", "adedpe202006_logtype_mur_mat_ext", "adedpe202006_logtype_mur_pos_isol_ext", "adedpe202006_logtype_pb_mat", "adedpe202006_logtype_pb_pos_isol", "adedpe202006_logtype_ph_pos_isol", "adedpe202006_logtype_presence_balcon", "adedpe202006_logtype_presence_climatisation", "adedpe202006_logtype_type_batiment", "adedpe202006_logtype_type_ventilation", "adedpe202006_nb_classe_ene_a", "adedpe202006_nb_classe_ene_b", "adedpe202006_nb_classe_ene_c", "adedpe202006_nb_classe_ene_d", "adedpe202006_nb_classe_ene_e", "adedpe202006_nb_classe_ene_f", "adedpe202006_nb_classe_ene_g", "adedpe202006_nb_classe_ene_nc", "cerffo2020_mat_mur_txt", "cerffo2020_mat_toit_txt", "igntop202103_bat_hauteur"])
-        batDf.info()
-        print("Bat OK")
-        relAddBatDf= loadData(".\data\\relAddBats\\rel_adresse_batiment_opendata_"+i+".csv", ["bnb_id", "etaban202111_id"])
-        relAddBatDf.info()
-        print("Rel OK")
-        adressDf= loadData(".\data\\adresses\\adresse_"+i+".csv", ["etaban202111_id", "etaban202111_latitude", "etaban202111_longitude"])
-        adressDf.info()
-        print("Adresse OK")
-        temp = pd.merge(batDf, relAddBatDf, how="left", on=["bnb_id"])
-        temp.info()
-        print("Temp1 OK")
-        temp2 = pd.merge(temp, adressDf, how="left", on=["etaban202111_id"])
-        temp2.info()
-        print("Temp2 OK")
-        fulldf.append(temp2)
+    fulldf = LoadOne(62)
+    for i in ['67','83','85','87','91']:
+        fulldf.append(LoadOne(i))
     return fulldf
 
-
+def LoadOne(number):
+    number = str(number)
+    batDf = loadData(".\data\\batiments\\batiment_"+number+".csv", ["mtedle2019_elec_conso_tot", "bnb_id", "adedpe202006_logtype_min_classe_ener_ges", "adedpe202006_logtype_ratio_ges_conso", "adedpe202006_logtype_periode_construction", "adedpe202006_min_conso_ener", "adedpe202006_min_estim_ges", "adedpe202006_max_conso_ener", "adedpe202006_max_estim_ges", "anarnc202012_nb_log", "anarnc202012_nb_lot_tertiaire", "anarnc202012_nb_lot_tot", "mtedle2019_elec_conso_res_par_pdl_res", "mtedle2019_elec_nb_pdl_tot", "mtedle2019_gaz_conso_res_par_pdl_res", "mtedle2019_gaz_nb_pdl_tot", "adedpe202006_logtype_baie_fs", "adedpe202006_logtype_baie_mat", "adedpe202006_logtype_baie_orientation", "adedpe202006_logtype_baie_remplissage", "adedpe202006_logtype_baie_type_vitrage", "adedpe202006_logtype_ch_gen_lib_appoint", "adedpe202006_logtype_ch_gen_lib_princ", "adedpe202006_logtype_ch_is_solaire", "adedpe202006_logtype_ch_type_inst", "adedpe202006_logtype_ecs_gen_lib_princ", "adedpe202006_logtype_inertie", "adedpe202006_logtype_mur_ep_mat_ext", "adedpe202006_logtype_mur_mat_ext", "adedpe202006_logtype_mur_pos_isol_ext", "adedpe202006_logtype_pb_mat", "adedpe202006_logtype_pb_pos_isol", "adedpe202006_logtype_ph_pos_isol", "adedpe202006_logtype_presence_balcon", "adedpe202006_logtype_presence_climatisation", "adedpe202006_logtype_type_batiment", "adedpe202006_logtype_type_ventilation", "adedpe202006_nb_classe_ene_a", "adedpe202006_nb_classe_ene_b", "adedpe202006_nb_classe_ene_c", "adedpe202006_nb_classe_ene_d", "adedpe202006_nb_classe_ene_e", "adedpe202006_nb_classe_ene_f", "adedpe202006_nb_classe_ene_g", "adedpe202006_nb_classe_ene_nc", "cerffo2020_mat_mur_txt", "cerffo2020_mat_toit_txt", "igntop202103_bat_hauteur"])
+    batDf.info()
+    print("Bat OK")
+    relAddBatDf= loadData(".\data\\relAddBats\\rel_adresse_batiment_opendata_"+number+".csv", ["bnb_id", "etaban202111_id"])
+    relAddBatDf.info()
+    print("Rel OK")
+    adressDf= loadData(".\data\\adresses\\adresse_"+number+".csv", ["etaban202111_id", "etaban202111_latitude", "etaban202111_longitude"])
+    adressDf.info()
+    print("Adresse OK")
+    temp = pd.merge(batDf, relAddBatDf, how="left", on=["bnb_id"])
+    temp.info()
+    print("Temp1 OK")
+    singleDF = pd.merge(temp, adressDf, how="left", on=["etaban202111_id"])
+    singleDF.info()
+    print("singleDF OK")
+    return singleDF
 
 
 
