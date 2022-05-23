@@ -85,3 +85,33 @@ def onSplit(pandaDF):
     strat_test_set = strat_test_set.drop('mtedle2019_elec_conso_tot', axis=1)
 
     return strat_train_set, strat_train_label, strat_test_set, strat_test_label
+
+def x_y_split(pandaDF, limit=False):
+    print("---------------------------------------------Split--------------------------------------")
+
+    pandaDF.drop("bnb_id", axis=1, inplace=True)
+    #pandaDF.drop("etaban202111_id", axis=1, inplace=True)
+
+    pandaDFD = pandaDF.copy()
+    
+    le = preprocessing.LabelEncoder()
+
+    pandaDF_2 = pandaDF.apply(le.fit_transform)
+
+      
+    pandaDF_2["mtedle2019_elec_conso_tot"] = pd.cut(pandaDF_2["mtedle2019_elec_conso_tot"], 32, labels=np.arange(32))
+
+    enc = preprocessing.OneHotEncoder()
+    enc.fit(pandaDF_2)
+
+    transformed = enc.transform(pandaDF_2)
+
+    oheDF = pd.DataFrame(transformed)
+
+    for categorie in pandaDFD.columns:
+
+        pandaDFD[categorie] = pd.concat([pandaDF[categorie], oheDF], axis=1).drop(categorie, axis=1)
+
+    if limit:
+        pandaDF_2 = pandaDF_2[:limit]
+    return pandaDF_2.drop('mtedle2019_elec_conso_tot', axis=1).to_numpy(), pandaDF_2["mtedle2019_elec_conso_tot"].copy().to_numpy()

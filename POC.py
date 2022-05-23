@@ -7,6 +7,7 @@ import numpy as np
 from joblib import dump, load
 import os
 from enum import Enum
+import DW
 
 class Mode(Enum):
     GENERATE = 0
@@ -17,10 +18,17 @@ MODELS_DIRECTORY='./saved_models'
 ITER_COUNT = 10000
 MODEL_COUNT = 5
 LOCAL_MODELS = []
-MODE = Mode.GENERATE_ONE
+MODE = Mode.LOAD
 
 # Load the diabetes dataset
-diabetes_X, diabetes_y = datasets.load_diabetes(return_X_y=True)
+#X, y = datasets.load_diabetes(return_X_y=True)
+
+#Load the buildings dataset
+pandaDf = DW.LoadAll()
+#pandaDf.info()
+X, y= DW.x_y_split(pandaDf, limit=100)
+
+#print(len(y))
 
 # models values
 mses = []
@@ -51,7 +59,7 @@ def generate_model(X_train, y_train, max_iter=ITER_COUNT, fname=False, partial =
 if(MODE == Mode.GENERATE):
     for i in range(MODEL_COUNT):
         # Bootstrap 5 models and saves the 5 trained params
-        X_train, X_test, y_train, y_test = train_test_split(diabetes_X, diabetes_y, test_size=0.33)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
         model = generate_model(X_train, y_train, fname=f'model{i}')
         y_pred = model.predict(X_test)
         # Evaluate model
@@ -68,7 +76,7 @@ if(MODE == Mode.GENERATE):
     print("Mean r2: %.2f" % (sum(r2s) / len(r2s)))
 
     # Build fl model
-    X_train, X_test, y_train, y_test = train_test_split(diabetes_X, diabetes_y, test_size=0.33)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
     federated_mlp = generate_model(X_train, y_train)
     federated_mlp.coefs_ = combine(coefs_arr)
     federated_mlp.intercepts_ = combine(intercepts_arr)
@@ -80,7 +88,7 @@ if(MODE == Mode.GENERATE):
     print("Federated r2: %.2f" % (federated_r2))
 
     #Build combined iteration model to compare with fl model on a same iteration basis
-    X_train, X_test, y_train, y_test = train_test_split(diabetes_X, diabetes_y, test_size=0.33)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
     combined_iter_mlp = generate_model(X_train, y_train, MODEL_COUNT*ITER_COUNT)
     y_pred = combined_iter_mlp.predict(X_test)
 
@@ -91,7 +99,7 @@ if(MODE == Mode.GENERATE):
 
 elif(MODE == Mode.GENERATE_ONE):
     # Bootstrap 1 models and saves it
-    X_train, X_test, y_train, y_test = train_test_split(diabetes_X, diabetes_y, test_size=0.33)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
     model = generate_model(X_train, y_train, fname=f'model_name')
 
 
@@ -106,7 +114,7 @@ elif(MODE == Mode.LOAD):
         intercepts_arr.append(model.intercepts_)
     
     # Agregate
-    X_train, X_test, y_train, y_test = train_test_split(diabetes_X, diabetes_y, test_size=0.33)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
     federated_mlp = generate_model(X_train, y_train, partial=True)
     federated_mlp.coefs_ = combine(coefs_arr)
     federated_mlp.intercepts_ = combine(intercepts_arr)
@@ -116,13 +124,3 @@ elif(MODE == Mode.LOAD):
     federated_mse, federated_r2 = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
     print("Federated mse: %.2f" % (federated_mse))
     print("Federated r2: %.2f" % (federated_r2))
-
-
-
-
-
-
-
-
-
-
