@@ -25,11 +25,9 @@ MODE = Mode.GENERATE_ONE
 #X, y = datasets.load_diabetes(return_X_y=True)
 
 #Load the buildings dataset
-pandaDf = DW.LoadAll()
-#pandaDf.info()
-X, y= DW.x_y_split(pandaDf)
-
-#print(len(y))
+pandaDf = DW.LoadOne(3)
+pandaDf = DW.Wrangling(pandaDf)
+X, y = DW.onSplit(pandaDf)
 
 # models values
 mses = []
