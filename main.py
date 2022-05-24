@@ -5,7 +5,9 @@ import Modeles.RandomForest as RandomForestPredictor
 import Modeles.GradientDecent as Grad
 
 pandaDf = DW.LoadOne(3)
+
 pandaDf = DW.Wrangling(pandaDf)
+
 
 pandaDf.info()
 print(pandaDf.head())
