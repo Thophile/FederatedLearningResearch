@@ -15,10 +15,11 @@ class Mode(Enum):
     LOAD = 2
 
 MODELS_DIRECTORY='./saved_models'
-ITER_COUNT = 10000
+ITER_COUNT = 100000
+HIDDEN_LAYER_SIZE = (50, 20)
 MODEL_COUNT = 5
 LOCAL_MODELS = []
-MODE = Mode.LOAD
+MODE = Mode.GENERATE_ONE
 
 # Load the diabetes dataset
 #X, y = datasets.load_diabetes(return_X_y=True)
@@ -26,7 +27,7 @@ MODE = Mode.LOAD
 #Load the buildings dataset
 pandaDf = DW.LoadAll()
 #pandaDf.info()
-X, y= DW.x_y_split(pandaDf, limit=100)
+X, y= DW.x_y_split(pandaDf)
 
 #print(len(y))
 
@@ -46,7 +47,7 @@ def combine(mat_list):
     return np.true_divide(avg, i).tolist()
 
 def generate_model(X_train, y_train, max_iter=ITER_COUNT, fname=False, partial = False):
-    model = MLPRegressor(random_state=1, max_iter=max_iter)
+    model = MLPRegressor(random_state=1, hidden_layer_sizes=HIDDEN_LAYER_SIZE, max_iter=max_iter)
     if not partial:
         model.fit(X_train, y_train)
     else:
@@ -101,7 +102,11 @@ elif(MODE == Mode.GENERATE_ONE):
     # Bootstrap 1 models and saves it
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
     model = generate_model(X_train, y_train, fname=f'model_name')
-
+    y_pred = model.predict(X_test)
+    mse, r2 = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
+    print(y_test)
+    print("mse: %.2f" % (mse))
+    print("r2: %.2f" % (r2))
 
 elif(MODE == Mode.LOAD):
     for filename in os.listdir(MODELS_DIRECTORY):
