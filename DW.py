@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-
+import datetime
 from sklearn.utils import shuffle
 
 
@@ -38,16 +38,16 @@ def Wrangling(DF):
             DF[col] = np.where(np.isnan(DF[col]), tempAverage, DF[col])
 
     DF["averageDegre"] = DF[['z1_S1(degC)', 'z2_S1(degC)', 'z4_S1(degC)', 'z5_S1(degC)']].mean(axis=1)
+    DF.drop(['z1_S1(degC)', 'z2_S1(degC)', 'z4_S1(degC)', 'z5_S1(degC)'], axis=1, inplace=True)
+
     DF["averageHumidity"] = DF[['z1_S1(RH%)', 'z2_S1(RH%)', 'z4_S1(RH%)', 'z5_S1(RH%)']].mean(axis=1)
+    DF.drop(['z1_S1(RH%)', 'z2_S1(RH%)', 'z4_S1(RH%)', 'z5_S1(RH%)'], axis=1, inplace=True)
+
     DF["averageLux"] = DF[['z1_S1(lux)', 'z2_S1(lux)', 'z4_S1(lux)', 'z5_S1(lux)']].mean(axis=1)
+    DF.drop(['z1_S1(lux)', 'z2_S1(lux)', 'z4_S1(lux)', 'z5_S1(lux)'], axis=1, inplace=True)
 
+    DF["Date"] = DF["Date"].map(lambda date: int(datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S').strftime('%H')) + int(datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S').strftime('%M'))/60)
     return DF
-
-
- 
-
- 
-
 
 def onSplit(pandaDF):
 

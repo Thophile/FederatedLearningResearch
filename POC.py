@@ -102,7 +102,6 @@ elif(MODE == Mode.GENERATE_ONE):
     model = generate_model(X_train, y_train, fname=f'model_name')
     y_pred = model.predict(X_test)
     mse, r2 = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
-    print(y_test)
     print("mse: %.2f" % (mse))
     print("r2: %.2f" % (r2))
 
