@@ -162,31 +162,28 @@ elif(MODE == Mode.FedPer):
             node_averaged=[]
             for z in range (0,len(LOCAL_MODELS[0].coefs_[i][y])):
                 node_path=0
-                yy=0
                 for ii in range (0,len(LOCAL_MODELS)):
-                    yy=yy+1
                     node_path =node_path+LOCAL_MODELS[ii].coefs_[i][y][z]
-                node_averaged.append(node_path/yy)
+                node_averaged.append(node_path/len(LOCAL_MODELS))
             coefs_averaged.append(node_averaged)
+        coefs_averaged = np.array(coefs_averaged,dtype=object)
         multi_layer_neuron.append(coefs_averaged)
         for w in range(0,len(LOCAL_MODELS[0].intercepts_[i])):
             intercepts_avg=0
-            yy=0
             for ii in range (0,len(LOCAL_MODELS)):
-                    yy=yy+1
                     intercepts_avg =intercepts_avg+LOCAL_MODELS[ii].intercepts_[i][w]
-            layer_intercepts_avg.append(intercepts_avg/yy)
-        all_intercepts_avg.append(layer_intercepts_avg)
+            layer_intercepts_avg.append(intercepts_avg/len(LOCAL_MODELS))
+        all_intercepts_avg.append(np.array(layer_intercepts_avg,dtype=object))
 
     X, y = getDF()
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
     federated_mlp = generate_model(X_train, y_train, partial=True)
     for i in range (0,len(all_intercepts_avg)-1):
-        federated_mlp.intercepts_[i]=all_intercepts_avg[i]
+        federated_mlp.intercepts_[i]=np.array(all_intercepts_avg[i],dtype=object)
     for i in range (0,len(multi_layer_neuron)-1):
-        federated_mlp.coefs_[i]=multi_layer_neuron[i]
-    federated_mlp.coefs_ = combine(coefs_arr)
-    federated_mlp.intercepts_ = combine(intercepts_arr)
+        federated_mlp.coefs_[i]=np.array(multi_layer_neuron[i],dtype=object)
+    for coef in federated_mlp.intercepts_:
+        print(len(coef))
     y_pred = federated_mlp.predict(X_test)
 
     print("---------- Federated learning ----------")
