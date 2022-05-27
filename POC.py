@@ -13,21 +13,17 @@ class Mode(Enum):
     GENERATE = 0
     GENERATE_ONE = 1
     LOAD = 2
+    TEST = 3
 
 MODELS_DIRECTORY='./saved_models'
 ITER_COUNT = 100000
 HIDDEN_LAYER_SIZE = (50, 20)
 MODEL_COUNT = 5
 LOCAL_MODELS = []
-MODE = Mode.GENERATE_ONE
+MODE = Mode.TEST
 
 # Load the diabetes dataset
 #X, y = datasets.load_diabetes(return_X_y=True)
-
-#Load the buildings dataset
-pandaDf = DW.LoadOne(4)
-pandaDf = DW.Wrangling(pandaDf)
-X, y = DW.onSplit(pandaDf)
 
 # models values
 mses = []
@@ -35,6 +31,13 @@ r2s = []
 
 coefs_arr= []
 intercepts_arr = []
+
+#Load the buildings dataset
+def getDF():
+    pandaDf = DW.LoadOne(4)
+    pandaDf = DW.Wrangling(pandaDf)
+    X, y = DW.onSplit(pandaDf)
+    return X, y
 
 def combine(mat_list):
     avg=mat_list[0]
@@ -56,6 +59,8 @@ def generate_model(X_train, y_train, max_iter=ITER_COUNT, fname=False, partial =
     return model
 
 if(MODE == Mode.GENERATE):
+    X, y = getDF()
+
     for i in range(MODEL_COUNT):
         # Bootstrap 5 models and saves the 5 trained params
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
@@ -97,6 +102,7 @@ if(MODE == Mode.GENERATE):
     print("Combined iter r2: %.2f" % (combined_iter_r2))
 
 elif(MODE == Mode.GENERATE_ONE):
+    X, y = getDF()
     # Bootstrap 1 models and saves it
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
     model = generate_model(X_train, y_train, fname=f'model_name')
@@ -106,6 +112,8 @@ elif(MODE == Mode.GENERATE_ONE):
     print("r2: %.2f" % (r2))
 
 elif(MODE == Mode.LOAD):
+    X, y = getDF()
+
     for filename in os.listdir(MODELS_DIRECTORY):
         f = os.path.join(MODELS_DIRECTORY, filename)
         LOCAL_MODELS.append(load(f))
@@ -126,3 +134,11 @@ elif(MODE == Mode.LOAD):
     federated_mse, federated_r2 = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
     print("Federated mse: %.2f" % (federated_mse))
     print("Federated r2: %.2f" % (federated_r2))
+
+
+elif(MODE == Mode.TEST):
+    for filename in os.listdir(MODELS_DIRECTORY):
+        f = os.path.join(MODELS_DIRECTORY, filename)
+        LOCAL_MODELS.append(load(f))
+
+    print(LOCAL_MODELS[0].coefs_)
