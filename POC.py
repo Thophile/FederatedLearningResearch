@@ -17,10 +17,10 @@ class Mode(Enum):
 
 MODELS_DIRECTORY='./saved_models'
 ITER_COUNT = 100000
-HIDDEN_LAYER_SIZE = (50, 20)
+HIDDEN_LAYER_SIZE = (50, 40, 30, 20)
 MODEL_COUNT = 5
 LOCAL_MODELS = []
-MODE = Mode.TEST
+MODE = Mode.GENERATE_ONE
 
 # Load the diabetes dataset
 #X, y = datasets.load_diabetes(return_X_y=True)
@@ -105,7 +105,7 @@ elif(MODE == Mode.GENERATE_ONE):
     X, y = getDF()
     # Bootstrap 1 models and saves it
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
-    model = generate_model(X_train, y_train, fname=f'model_name')
+    model = generate_model(X_train, y_train, fname=f'model_4_4HL')
     y_pred = model.predict(X_test)
     mse, r2 = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
     print("mse: %.2f" % (mse))
@@ -141,4 +141,19 @@ elif(MODE == Mode.TEST):
         f = os.path.join(MODELS_DIRECTORY, filename)
         LOCAL_MODELS.append(load(f))
 
-    print(LOCAL_MODELS[0].coefs_)
+    for model in LOCAL_MODELS:
+        # Export model neurons data
+        coefs_arr.append(model.coefs_)
+        intercepts_arr.append(model.intercepts_)
+
+    X, y = getDF()
+
+    
+
+    print(len(LOCAL_MODELS[0].coefs_[0]))
+    print(len(LOCAL_MODELS[0].intercepts_[0]))
+    print(len(LOCAL_MODELS[0].coefs_[1]))
+    print(LOCAL_MODELS[0].intercepts_[1])
+    print(LOCAL_MODELS[0].coefs_[2])
+    print(LOCAL_MODELS[0].intercepts_[2])
+    
