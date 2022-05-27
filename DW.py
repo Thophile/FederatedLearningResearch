@@ -21,7 +21,7 @@ def LoadAll():
 
 def LoadOne(number):
     number = str(number)
-    print('--------------------------------------------Loading csv '+ number +'---------------------------------------')
+    print('---------- Loading csv '+ number +' ----------')
     FloorDf = loadData(".\data\\2018Floor"+number+".csv")
     FloorDf.info()
     print("Floor 2018 OK")
@@ -31,7 +31,7 @@ def LoadOne(number):
     return FloorDf
 
 def Wrangling(DF):
-    print('--------------------------------------------Wrangling---------------------------------------')
+    print('---------- Wrangling ----------')
     for col in DF:
         if(DF.dtypes[col]=="float"):
             tempAverage = DF[col].mean()
@@ -52,7 +52,7 @@ def Wrangling(DF):
 def onSplit(pandaDF):
 
 
-    print("---------------------------------------------Split--------------------------------------")
+    print("---------- Split ----------")
 
     #split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
 

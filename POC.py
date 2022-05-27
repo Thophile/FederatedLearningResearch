@@ -8,19 +8,21 @@ from joblib import dump, load
 import os
 from enum import Enum
 import DW
+from feddist import roger_federer
 
 class Mode(Enum):
     GENERATE = 0
     GENERATE_ONE = 1
     LOAD = 2
-    TEST = 3
+    FEDDIST = 3
+    TEST = 4
 
 MODELS_DIRECTORY='./saved_models'
 ITER_COUNT = 100000
 HIDDEN_LAYER_SIZE = (50, 40, 30, 20)
 MODEL_COUNT = 5
 LOCAL_MODELS = []
-MODE = Mode.GENERATE_ONE
+MODE = Mode.FEDDIST
 
 # Load the diabetes dataset
 #X, y = datasets.load_diabetes(return_X_y=True)
@@ -135,6 +137,27 @@ elif(MODE == Mode.LOAD):
     print("Federated mse: %.2f" % (federated_mse))
     print("Federated r2: %.2f" % (federated_r2))
 
+elif(MODE == Mode.FEDDIST):
+    X, y = getDF()
+    NEW_LAYER_SIZE = list(HIDDEN_LAYER_SIZE)
+
+    for filename in os.listdir(MODELS_DIRECTORY):
+        f = os.path.join(MODELS_DIRECTORY, filename)
+        LOCAL_MODELS.append(load(f))
+
+    NEW_LAYER_SIZE, new_coefs, new_intercepts = roger_federer(LOCAL_MODELS, HIDDEN_LAYER_SIZE)
+
+    print("---------- Creating global model with size of " + str(NEW_LAYER_SIZE) + " ----------")
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
+    model = MLPRegressor(random_state=1, hidden_layer_sizes=tuple(NEW_LAYER_SIZE), max_iter=ITER_COUNT)
+    model.partial_fit(X_train, y_train)
+    model.coefs_ = new_coefs
+    model.intercepts_ = new_intercepts
+    y_pred = model.predict(X_test)
+    print("---------- Feddist results ----------")
+    feddist_mse, feddist_r2 = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
+    print("Feddist mse: %.2f" % (feddist_mse))
+    print("Feddist r2: %.2f" % (feddist_r2))
 
 elif(MODE == Mode.TEST):
     for filename in os.listdir(MODELS_DIRECTORY):
