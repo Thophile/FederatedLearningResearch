@@ -1,3 +1,4 @@
+from lib2to3.pytree import NodePattern
 from statistics import mode
 from Modeles.MLP import *
 import EvaluatePrediction as PredictionEvaluator
@@ -13,11 +14,12 @@ from feddist import roger_federer
 class Mode(Enum):
     GENERATE = 0
     GENERATE_ONE = 1
-    LOAD = 2
+    FEDAVG = 2
     FEDDIST = 3
     TEST = 4
+    FEDPER = 5
 
-MODELS_DIRECTORY='./saved_models'
+MODELS_DIRECTORY='./saved_models/4HL'
 ITER_COUNT = 100000
 HIDDEN_LAYER_SIZE = (50, 40, 30, 20)
 MODEL_COUNT = 5
@@ -113,7 +115,7 @@ elif(MODE == Mode.GENERATE_ONE):
     print("mse: %.2f" % (mse))
     print("r2: %.2f" % (r2))
 
-elif(MODE == Mode.LOAD):
+elif(MODE == Mode.FEDAVG):
     X, y = getDF()
 
     for filename in os.listdir(MODELS_DIRECTORY):
@@ -160,6 +162,9 @@ elif(MODE == Mode.FEDDIST):
     print("Feddist r2: %.2f" % (feddist_r2))
 
 elif(MODE == Mode.TEST):
+    print("TEST")
+
+elif(MODE == Mode.FEDPER):
     for filename in os.listdir(MODELS_DIRECTORY):
         f = os.path.join(MODELS_DIRECTORY, filename)
         LOCAL_MODELS.append(load(f))
@@ -169,14 +174,42 @@ elif(MODE == Mode.TEST):
         coefs_arr.append(model.coefs_)
         intercepts_arr.append(model.intercepts_)
 
+    multi_layer_neuron=[]
+    coefs_averaged=[]
+    node_averaged=[]
+    all_intercepts_avg=[]
+    for i in range(0,len(LOCAL_MODELS[0].coefs_)-2):
+        layer_intercepts_avg=[]
+        coefs_averaged=[]
+        for y in range(0,len(LOCAL_MODELS[0].coefs_[i])):
+            node_averaged=[]
+            for z in range (0,len(LOCAL_MODELS[0].coefs_[i][y])):
+                node_path=0
+                for ii in range (0,len(LOCAL_MODELS)):
+                    node_path =node_path+LOCAL_MODELS[ii].coefs_[i][y][z]
+                node_averaged.append(node_path/len(LOCAL_MODELS))
+            coefs_averaged.append(node_averaged)
+        coefs_averaged = np.array(coefs_averaged,dtype=object)
+        multi_layer_neuron.append(coefs_averaged)
+        for w in range(0,len(LOCAL_MODELS[0].intercepts_[i])):
+            intercepts_avg=0
+            for ii in range (0,len(LOCAL_MODELS)):
+                    intercepts_avg =intercepts_avg+LOCAL_MODELS[ii].intercepts_[i][w]
+            layer_intercepts_avg.append(intercepts_avg/len(LOCAL_MODELS))
+        all_intercepts_avg.append(np.array(layer_intercepts_avg,dtype=object))
+
     X, y = getDF()
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
+    federated_mlp = generate_model(X_train, y_train, partial=True)
+    for i in range (0,len(all_intercepts_avg)-1):
+        federated_mlp.intercepts_[i]=np.array(all_intercepts_avg[i],dtype=object)
+    for i in range (0,len(multi_layer_neuron)-1):
+        federated_mlp.coefs_[i]=np.array(multi_layer_neuron[i],dtype=object)
+    for coef in federated_mlp.intercepts_:
+        print(len(coef))
+    y_pred = federated_mlp.predict(X_test)
 
-    
-
-    print(len(LOCAL_MODELS[0].coefs_[0]))
-    print(len(LOCAL_MODELS[0].intercepts_[0]))
-    print(len(LOCAL_MODELS[0].coefs_[1]))
-    print(LOCAL_MODELS[0].intercepts_[1])
-    print(LOCAL_MODELS[0].coefs_[2])
-    print(LOCAL_MODELS[0].intercepts_[2])
-    
+    print("---------- Federated learning ----------")
+    federated_mse, federated_r2 = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
+    print("Federated mse: %.2f" % (federated_mse))
+    print("Federated r2: %.2f" % (federated_r2))
