@@ -137,7 +137,7 @@ elif(MODE == Mode.FEDAVG):
     federated_mlp.intercepts_ = combine(intercepts_arr)
 
     print("---------- Fedavg results ----------")
-    print(f"Federated in {time.time() - start}ms")
+    print(f"Federated in {time.time() - start}s")
     y_pred = federated_mlp.predict(X_test)
 
     (mse, mae, r2) = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
@@ -164,7 +164,7 @@ elif(MODE == Mode.FEDDIST):
     model.intercepts_ = new_intercepts
 
     print("---------- Fedpdist results ----------")
-    print(f"Federated in {time.time() - start}ms")
+    print(f"Federated in {time.time() - start}s")
     y_pred = model.predict(X_test)
 
     (mse, mae, r2) = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
@@ -222,7 +222,7 @@ elif(MODE == Mode.FEDPER):
         print(len(coef))
 
     print("---------- Fedper results ----------")
-    print(f"Federated in {time.time() - start}ms")
+    print(f"Federated in {time.time() - start}s")
     y_pred = federated_mlp.predict(X_test)
 
     (mse, mae, r2) = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
