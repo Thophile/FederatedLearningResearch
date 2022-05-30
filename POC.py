@@ -140,10 +140,9 @@ elif(MODE == Mode.FEDAVG):
     print(f"Federated in {time.time() - start}ms")
     y_pred = federated_mlp.predict(X_test)
 
-    (mse, mae, max_err, r2) = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
+    (mse, mae, r2) = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
     print("mse: %.2f" % (mse))
     print("mae: %.2f" % (mae))
-    print("max_err: %.2f" % (max_err))
     print("r2: %.2f" % (r2))
 
 elif(MODE == Mode.FEDDIST):
@@ -168,10 +167,9 @@ elif(MODE == Mode.FEDDIST):
     print(f"Federated in {time.time() - start}ms")
     y_pred = model.predict(X_test)
 
-    (mse, mae, max_err, r2) = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
+    (mse, mae, r2) = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
     print("mse: %.2f" % (mse))
     print("mae: %.2f" % (mae))
-    print("max_err: %.2f" % (max_err))
     print("r2: %.2f" % (r2))
 
 elif(MODE == Mode.TEST):
@@ -227,8 +225,7 @@ elif(MODE == Mode.FEDPER):
     print(f"Federated in {time.time() - start}ms")
     y_pred = federated_mlp.predict(X_test)
 
-    (mse, mae, max_err, r2) = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
+    (mse, mae, r2) = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
     print("mse: %.2f" % (mse))
     print("mae: %.2f" % (mae))
-    print("max_err: %.2f" % (max_err))
     print("r2: %.2f" % (r2))
