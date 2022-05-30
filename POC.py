@@ -135,13 +135,16 @@ elif(MODE == Mode.FEDAVG):
     federated_mlp = generate_model(X_train, y_train, partial=True)
     federated_mlp.coefs_ = combine(coefs_arr)
     federated_mlp.intercepts_ = combine(intercepts_arr)
+
+    print("---------- Fedavg results ----------")
     print(f"Federated in {time.time() - start}ms")
     y_pred = federated_mlp.predict(X_test)
 
-    print("---------- Federated learning ----------")
-    federated_mse, federated_r2 = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
-    print("Federated mse: %.2f" % (federated_mse))
-    print("Federated r2: %.2f" % (federated_r2))
+    (mse, mae, max_err, r2) = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
+    print("mse: %.2f" % (mse))
+    print("mae: %.2f" % (mae))
+    print("max_err: %.2f" % (max_err))
+    print("r2: %.2f" % (r2))
 
 elif(MODE == Mode.FEDDIST):
     X, y = getDF()
@@ -160,13 +163,16 @@ elif(MODE == Mode.FEDDIST):
     model.partial_fit(X_train, y_train)
     model.coefs_ = new_coefs
     model.intercepts_ = new_intercepts
-    print(f"Federated in {time.time() - start}ms")
 
+    print("---------- Fedpdist results ----------")
+    print(f"Federated in {time.time() - start}ms")
     y_pred = model.predict(X_test)
-    print("---------- Feddist results ----------")
-    feddist_mse, feddist_r2 = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
-    print("Feddist mse: %.2f" % (feddist_mse))
-    print("Feddist r2: %.2f" % (feddist_r2))
+
+    (mse, mae, max_err, r2) = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
+    print("mse: %.2f" % (mse))
+    print("mae: %.2f" % (mae))
+    print("max_err: %.2f" % (max_err))
+    print("r2: %.2f" % (r2))
 
 elif(MODE == Mode.TEST):
     print("TEST")
@@ -217,10 +223,12 @@ elif(MODE == Mode.FEDPER):
     for coef in federated_mlp.intercepts_:
         print(len(coef))
 
+    print("---------- Fedper results ----------")
     print(f"Federated in {time.time() - start}ms")
     y_pred = federated_mlp.predict(X_test)
 
-    print("---------- Federated learning ----------")
-    federated_mse, federated_r2 = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
-    print("Federated mse: %.2f" % (federated_mse))
-    print("Federated r2: %.2f" % (federated_r2))
+    (mse, mae, max_err, r2) = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
+    print("mse: %.2f" % (mse))
+    print("mae: %.2f" % (mae))
+    print("max_err: %.2f" % (max_err))
+    print("r2: %.2f" % (r2))
