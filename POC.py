@@ -10,6 +10,7 @@ import os
 from enum import Enum
 import DW
 from feddist import roger_federer
+import time
 
 class Mode(Enum):
     GENERATE = 0
@@ -122,6 +123,8 @@ elif(MODE == Mode.FEDAVG):
         f = os.path.join(MODELS_DIRECTORY, filename)
         LOCAL_MODELS.append(load(f))
 
+    start = time.time()
+
     for model in LOCAL_MODELS:
         # Export model neurons data
         coefs_arr.append(model.coefs_)
@@ -132,6 +135,7 @@ elif(MODE == Mode.FEDAVG):
     federated_mlp = generate_model(X_train, y_train, partial=True)
     federated_mlp.coefs_ = combine(coefs_arr)
     federated_mlp.intercepts_ = combine(intercepts_arr)
+    print(f"Federated in {time.time() - start}ms")
     y_pred = federated_mlp.predict(X_test)
 
     print("---------- Federated learning ----------")
@@ -147,6 +151,7 @@ elif(MODE == Mode.FEDDIST):
         f = os.path.join(MODELS_DIRECTORY, filename)
         LOCAL_MODELS.append(load(f))
 
+    start = time.time()
     NEW_LAYER_SIZE, new_coefs, new_intercepts = roger_federer(LOCAL_MODELS, HIDDEN_LAYER_SIZE)
 
     print("---------- Creating global model with size of " + str(NEW_LAYER_SIZE) + " ----------")
@@ -155,6 +160,8 @@ elif(MODE == Mode.FEDDIST):
     model.partial_fit(X_train, y_train)
     model.coefs_ = new_coefs
     model.intercepts_ = new_intercepts
+    print(f"Federated in {time.time() - start}ms")
+
     y_pred = model.predict(X_test)
     print("---------- Feddist results ----------")
     feddist_mse, feddist_r2 = PredictionEvaluator.EvaluateReggression(y_test, y_pred)
@@ -169,6 +176,10 @@ elif(MODE == Mode.FEDPER):
         f = os.path.join(MODELS_DIRECTORY, filename)
         LOCAL_MODELS.append(load(f))
 
+    X, y = getDF()
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
+
+    start = time.time()
     for model in LOCAL_MODELS:
         # Export model neurons data
         coefs_arr.append(model.coefs_)
@@ -198,8 +209,6 @@ elif(MODE == Mode.FEDPER):
             layer_intercepts_avg.append(intercepts_avg/len(LOCAL_MODELS))
         all_intercepts_avg.append(np.array(layer_intercepts_avg,dtype=object))
 
-    X, y = getDF()
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
     federated_mlp = generate_model(X_train, y_train, partial=True)
     for i in range (0,len(all_intercepts_avg)-1):
         federated_mlp.intercepts_[i]=np.array(all_intercepts_avg[i],dtype=object)
@@ -207,6 +216,8 @@ elif(MODE == Mode.FEDPER):
         federated_mlp.coefs_[i]=np.array(multi_layer_neuron[i],dtype=object)
     for coef in federated_mlp.intercepts_:
         print(len(coef))
+
+    print(f"Federated in {time.time() - start}ms")
     y_pred = federated_mlp.predict(X_test)
 
     print("---------- Federated learning ----------")
